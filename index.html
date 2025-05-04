@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mellan Tystnaden</title>
+  <style>
+    body {
+      background: linear-gradient(#e8e8e8, #d0d0d0);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #chat-box {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      height: 400px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    #chat-input {
+      display: flex;
+    }
+    #chat-input input {
+      flex: 1;
+      padding: 0.5em;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+    #chat-input button {
+      padding: 0.5em 1em;
+      margin-left: 0.5em;
+      border: none;
+      background-color: #5c5c5c;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Mellan Tystnaden</h2>
+  <div id="chat-box"></div>
+  <div id="chat-input">
+    <input type="text" id="message" placeholder="Skriv något..." />
+    <button onclick="sendMessage()">Skicka</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    // Ersätt detta med din egen Firebase-konfiguration
+    var firebaseConfig = {
+      apiKey: "DIN_API_KEY",
+      authDomain: "dittprojekt.firebaseapp.com",
+      databaseURL: "https://dittprojekt.firebaseio.com",
+      projectId: "dittprojekt",
+      storageBucket: "dittprojekt.appspot.com",
+      messagingSenderId: "xxxxxxx",
+      appId: "xxxxxxx"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    var db = firebase.database();
+
+    function sendMessage() {
+      var msg = document.getElementById("message").value;
+      db.ref("messages").push().set({
+        message: msg,
+        timestamp: Date.now()
+      });
+      document.getElementById("message").value = "";
+    }
+
+    db.ref("messages").on("child_added", function(snapshot) {
+      var msg = snapshot.val().message;
+      var div = document.createElement("div");
+      div.textContent = msg;
+      document.getElementById("chat-box").appendChild(div);
+      document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
+    });
+  </script>
+</body>
+</html>
