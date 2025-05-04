@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mellan Tystnaden</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f0f9ff, #cce7ff);
+      font-family: 'Arial', sans-serif;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 36px;
+      color: #4A90E2;
+    }
+
+    p {
+      font-size: 18px;
+      color: #555;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    /* Chattbox: Låt alla meddelanden visas */
+    #chat-box {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      height: 300px;
+      margin: 20px auto;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    /* Inputfält för chatt */
+    #chat-input {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    #chat-input input {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    #chat-input button {
+      padding: 10px;
+      margin-left: 10px;
+      background-color: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mellan Tystnaden</h1>
+  <p>Här kan du hitta ett lugn att tala ut. Skriv gärna vad du känner, och jag kommer lyssna.</p>
+
+  <!-- Chattboxen där meddelandena kommer att visas -->
+  <div id="chat-box"></div>
+
+  <!-- Inputfältet för att skriva meddelanden -->
+  <div id="chat-input">
+    <input type="text" id="message" placeholder="Skriv här..." />
+    <button onclick="sendMessage()">Skicka</button>
+  </div>
+
+  <footer>
+    <p>Du kan alltid skriva till mig anonymt. Jag är inte en terapeut, men jag vill lyssna.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "DIN_API_KEY",
+      authDomain: "dittprojekt.firebaseapp.com",
+      databaseURL: "https://dittprojekt.firebaseio.com",
+      projectId: "dittprojekt",
+      storageBucket: "dittprojekt.appspot.com",
+      messagingSenderId: "xxxxxxx",
+      appId: "xxxxxxx"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    var db = firebase.database();
+
+    // Skicka meddelande till Firebase
+    function sendMessage() {
+      var msg = document.getElementById("message").value;
+      if (msg.trim() !== "") {
+        db.ref("messages").push().set({
+          message: msg,
+          timestamp: Date.now()
+        });
+        document.getElementById("message").value = "";
+      }
+    }
+
+    // Visa nya meddelanden från Firebase
+    db.ref("messages").on("child_added", function(snapshot) {
+      var msg = snapshot.val().message;
+      var div = document.createElement("div");
+      div.textContent = msg;
+      document.getElementById("chat-box").appendChild(div);
+      document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
+    });
+  </script>
+</body>
+</html>
